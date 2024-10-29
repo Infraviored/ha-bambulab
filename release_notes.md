@@ -1,3 +1,17 @@
+### V2.0.27
+- Miscellaneous fixes
+
+### V2.0.26
+- Add Greek translation
+- Fix regression in error sensor never turning off
+- Update contribution rules
+
+### V2.0.25
+- Re-enable slicer settings with fix and improved resilience to http errors
+- More authentication fixes
+- Fix blocking IO warning for MQTT TLS setup
+- Miscellaneous fixes
+
 ### V2.0.24
 - Disable slicer settings retrieval as it is getting access denied and breaking the integration.
 

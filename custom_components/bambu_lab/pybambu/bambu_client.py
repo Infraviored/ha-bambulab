@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import queue
 import json
 import math
@@ -319,7 +320,11 @@ class BambuClient:
             # Reconnect normally
             self.connect(self.callback)
 
-    def connect(self, callback):
+    def setup_tls(self):
+        self.client.tls_set(tls_version=ssl.PROTOCOL_TLS, cert_reqs=ssl.CERT_NONE)
+        self.client.tls_insecure_set(True)
+
+    async def connect(self, callback):
         """Connect to the MQTT Broker"""
         self.client = mqtt.Client()
         self.callback = callback
@@ -329,8 +334,10 @@ class BambuClient:
         # Set aggressive reconnect polling.
         self.client.reconnect_delay_set(min_delay=1, max_delay=1)
 
-        self.client.tls_set(tls_version=ssl.PROTOCOL_TLS, cert_reqs=ssl.CERT_NONE)
-        self.client.tls_insecure_set(True)
+        # Run the blocking tls_set method in a separate thread
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self.setup_tls)
+
         self._port = 8883
         if self._local_mqtt:
             self.client.username_pw_set("bblp", password=self._access_code)
@@ -369,10 +376,13 @@ class BambuClient:
         self._watchdog = WatchdogThread(self)
         self._watchdog.start()
 
-        if self._device.supports_feature(Features.CAMERA_IMAGE):
-            LOGGER.debug("Starting Chamber Image thread")
-            self._camera = ChamberImageThread(self)
-            self._camera.start()
+        if not self._device.supports_feature(Features.CAMERA_RTSP):
+            if self._device.supports_feature(Features.CAMERA_IMAGE):
+                LOGGER.debug("Starting Chamber Image thread")
+                self._camera = ChamberImageThread(self)
+                self._camera.start()
+            elif (self._client.host == "") or (self._client._access_code == ""):
+                LOGGER.debug("Skipping camera setup as local access details not provided.")
 
     def try_on_connect(self,
                        client_: mqtt.Client,
@@ -516,8 +526,10 @@ class BambuClient:
         self.client.on_disconnect = self.on_disconnect
         self.client.on_message = on_message
 
-        self.client.tls_set(tls_version=ssl.PROTOCOL_TLS, cert_reqs=ssl.CERT_NONE)
-        self.client.tls_insecure_set(True)
+        # Run the blocking tls_set method in a separate thread
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self.setup_tls)
+        
         if self._local_mqtt:
             self.client.username_pw_set("bblp", password=self._access_code)
         else:

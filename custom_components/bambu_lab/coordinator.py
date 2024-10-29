@@ -4,13 +4,8 @@ from .const import (
     BRAND,
     DOMAIN,
     LOGGER,
-    PLATFORMS,
-    SCAN_INTERVAL,
 )
 import asyncio
-import json
-import time
-import threading
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -54,8 +49,7 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         super().__init__(
             hass,
             LOGGER,
-            name=DOMAIN,
-            update_interval=SCAN_INTERVAL
+            name=DOMAIN
         )
 
         self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, self._async_shutdown)
@@ -71,8 +65,7 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         self._eventloop.call_soon_threadsafe(self.event_handler_internal, event)
 
     def event_handler_internal(self, event):
-        if event != "event_printer_chamber_image_update":
-            LOGGER.debug(f"EVENT: {event}")
+        LOGGER.debug(f"EVENT: {event}")
         if event == "event_printer_info_update":
             self._update_device_info()
             if self.get_model().supports_feature(Features.EXTERNAL_SPOOL):
@@ -128,7 +121,7 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def listen(self):
         LOGGER.debug("Starting listen()")
-        self.client.connect(callback=self.event_handler)
+        await self.client.connect(callback=self.event_handler)
 
     async def start_mqtt(self) -> None:
         """Use MQTT for updates."""
@@ -143,7 +136,7 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         return self.client.publish(msg)
 
     async def _async_update_data(self):
-        LOGGER.debug(f"{self.config_entry.data['device_type']} HA POLL: MQTT connected: {self.client.connected}")
+        LOGGER.debug(f"_async_update_data() called")
         device = self.get_model()
         return device
     
@@ -190,9 +183,7 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
                 "device_id": hadevice.id,
                 "type": "event_printer_error_cleared",
             }
-            #LOGGER.debug(f"EVENT: print_error cleared: {event_data}")
-            if 'Code' in device.print_error.error:
-                event_data["Code"] = device.print_error.error['Code']
+            LOGGER.debug(f"EVENT: print_error cleared: {event_data}")
         else:
             event_data = {
                 "device_id": hadevice.id,
@@ -226,22 +217,37 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         LOGGER.debug("_reinitialize_sensors DONE")
 
     def _update_ams_info(self):
-        device = self.get_model()
-        dev_reg = device_registry.async_get(self._hass)
-        for index in range (0, len(device.ams.data)):
-            if device.ams.data[index] is not None:
-                LOGGER.debug(f"Initialize AMS {index+1}")
-                hadevice = dev_reg.async_get_or_create(config_entry_id=self.config_entry.entry_id,
-                                                    identifiers={(DOMAIN, device.ams.data[index].serial)})
-                serial = self.config_entry.data["serial"]
-                device_type = self.config_entry.data["device_type"]
-                dev_reg.async_update_device(hadevice.id,
-                                            name=f"{device_type}_{serial}_AMS_{index+1}",
-                                            model="AMS",
-                                            manufacturer=BRAND,
-                                            sw_version=device.ams.data[index].sw_version,
-                                            hw_version=device.ams.data[index].hw_version)
+        LOGGER.debug("_update_ams_info")
 
+        # We don't need to add the AMS devices here as home assistant will ignore devices with no sensors and
+        # automatically add devices when we add sensors linked to them with the device we pass when adding the
+        # sensors - which is controlled in the single get_ams_device() method.
+
+        # But we can use this to clean up orphaned AMS devices such as when an AMS is moved between printers.
+        existing_ams_devices = []
+        for index in range (0, len(self.get_model().ams.data)):
+            ams_entry = self.get_model().ams.data[index]
+            if ams_entry is not None:
+                existing_ams_devices.append(ams_entry.serial)
+
+        config_entry_id=self.config_entry.entry_id
+        dev_reg = device_registry.async_get(self._hass)
+        ams_devices_to_remove = []
+        for device in dev_reg.devices.values():
+            if config_entry_id in device.config_entries:
+                # This device is associated with this printer.
+                if device.model == 'AMS':
+                    # And it's an AMS device
+                    ams_serial = list(device.identifiers)[0][1]
+                    if ams_serial not in existing_ams_devices:
+                        LOGGER.debug(f"Found stale attached AMS with serial {ams_serial}")
+                        ams_devices_to_remove.append(device.id)
+
+        for device in ams_devices_to_remove:
+            LOGGER.debug(f"Removing stale AMS.")
+            dev_reg.async_remove_device(device)
+
+        # And now we can reinitialize the sensors, which will trigger device creation as necessary.
         self.hass.async_create_task(self._reinitialize_sensors())
 
     def _update_external_spool_info(self):
@@ -289,9 +295,10 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         printer_serial = self.config_entry.data["serial"]
         device_type = self.config_entry.data["device_type"]
         device_name=f"{device_type}_{printer_serial}_AMS_{index+1}"
+        ams_serial = self.get_model().ams.data[index].serial
 
         return DeviceInfo(
-            identifiers={(DOMAIN, self.get_model().ams.data[index].serial)},
+            identifiers={(DOMAIN, ams_serial)},
             via_device=(DOMAIN, printer_serial),
             name=device_name,
             model="AMS",

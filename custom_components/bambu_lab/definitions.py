@@ -180,7 +180,8 @@ PRINTER_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:fan",
-        value_fn=lambda self: self.coordinator.get_model().fans.get_fan_speed(FansEnum.AUXILIARY)
+        value_fn=lambda self: self.coordinator.get_model().fans.get_fan_speed(FansEnum.AUXILIARY),
+        exists_fn=lambda coordinator: coordinator.get_model().supports_feature(Features.AUX_FAN),
     ),
     BambuLabSensorEntityDescription(
         key="chamber_fan_speed",
@@ -371,7 +372,7 @@ PRINTER_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().get_active_tray().nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().get_active_tray().nozzle_temp_max,
             "remain": self.coordinator.get_model().get_active_tray().remain,
-            "tag_uid": self.coordinator.get_model().get_active_tray().tag_uid,
+            "tray_uuid": self.coordinator.get_model().get_active_tray().tray_uuid,
             "type": self.coordinator.get_model().get_active_tray().type,
         },
         available_fn=lambda self: self.coordinator.get_model().get_active_tray() is not None,
@@ -390,7 +391,7 @@ PRINTER_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().get_active_tray().nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().get_active_tray().nozzle_temp_max,
             "remain": self.coordinator.get_model().get_active_tray().remain,
-            "tag_uid": self.coordinator.get_model().get_active_tray().tag_uid,
+            "tray_uuid": self.coordinator.get_model().get_active_tray().tray_uuid,
             "type": self.coordinator.get_model().get_active_tray().type,
         },
         available_fn=lambda self: self.coordinator.get_model().get_active_tray() is not None,
@@ -483,7 +484,7 @@ AMS_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().ams.data[self.index].tray[0].nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().ams.data[self.index].tray[0].nozzle_temp_max,
             "remain": self.coordinator.get_model().ams.data[self.index].tray[0].remain,
-            "tag_uid": self.coordinator.get_model().ams.data[self.index].tray[0].tag_uid,
+            "tray_uuid": self.coordinator.get_model().ams.data[self.index].tray[0].tray_uuid,
             "type": self.coordinator.get_model().ams.data[self.index].tray[0].type,
         },
         exists_fn=lambda coordinator: not coordinator.get_model().supports_feature(Features.K_VALUE)
@@ -503,7 +504,7 @@ AMS_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().ams.data[self.index].tray[1].nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().ams.data[self.index].tray[1].nozzle_temp_max,
             "remain": self.coordinator.get_model().ams.data[self.index].tray[1].remain,
-            "tag_uid": self.coordinator.get_model().ams.data[self.index].tray[1].tag_uid,
+            "tray_uuid": self.coordinator.get_model().ams.data[self.index].tray[1].tray_uuid,
             "type": self.coordinator.get_model().ams.data[self.index].tray[1].type,
         },
         exists_fn=lambda coordinator: not coordinator.get_model().supports_feature(Features.K_VALUE)
@@ -523,7 +524,7 @@ AMS_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().ams.data[self.index].tray[2].nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().ams.data[self.index].tray[2].nozzle_temp_max,
             "remain": self.coordinator.get_model().ams.data[self.index].tray[2].remain,
-            "tag_uid": self.coordinator.get_model().ams.data[self.index].tray[2].tag_uid,
+            "tray_uuid": self.coordinator.get_model().ams.data[self.index].tray[2].tray_uuid,
             "type": self.coordinator.get_model().ams.data[self.index].tray[2].type,
         },
         exists_fn=lambda coordinator: not coordinator.get_model().supports_feature(Features.K_VALUE)
@@ -543,7 +544,7 @@ AMS_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().ams.data[self.index].tray[3].nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().ams.data[self.index].tray[3].nozzle_temp_max,
             "remain": self.coordinator.get_model().ams.data[self.index].tray[3].remain,
-            "tag_uid": self.coordinator.get_model().ams.data[self.index].tray[3].tag_uid,
+            "tray_uuid": self.coordinator.get_model().ams.data[self.index].tray[3].tray_uuid,
             "type": self.coordinator.get_model().ams.data[self.index].tray[3].type,
         },
         exists_fn=lambda coordinator: not coordinator.get_model().supports_feature(Features.K_VALUE)
@@ -564,7 +565,7 @@ AMS_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().ams.data[self.index].tray[0].nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().ams.data[self.index].tray[0].nozzle_temp_max,
             "remain": self.coordinator.get_model().ams.data[self.index].tray[0].remain,
-            "tag_uid": self.coordinator.get_model().ams.data[self.index].tray[0].tag_uid,
+            "tray_uuid": self.coordinator.get_model().ams.data[self.index].tray[0].tray_uuid,
             "type": self.coordinator.get_model().ams.data[self.index].tray[0].type,
         },
         exists_fn=lambda coordinator: coordinator.get_model().supports_feature(Features.K_VALUE)
@@ -585,7 +586,7 @@ AMS_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().ams.data[self.index].tray[1].nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().ams.data[self.index].tray[1].nozzle_temp_max,
             "remain": self.coordinator.get_model().ams.data[self.index].tray[1].remain,
-            "tag_uid": self.coordinator.get_model().ams.data[self.index].tray[1].tag_uid,
+            "tray_uuid": self.coordinator.get_model().ams.data[self.index].tray[1].tray_uuid,
             "type": self.coordinator.get_model().ams.data[self.index].tray[1].type,
         },
         exists_fn=lambda coordinator: coordinator.get_model().supports_feature(Features.K_VALUE)
@@ -606,7 +607,7 @@ AMS_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().ams.data[self.index].tray[2].nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().ams.data[self.index].tray[2].nozzle_temp_max,
             "remain": self.coordinator.get_model().ams.data[self.index].tray[2].remain,
-            "tag_uid": self.coordinator.get_model().ams.data[self.index].tray[2].tag_uid,
+            "tray_uuid": self.coordinator.get_model().ams.data[self.index].tray[2].tray_uuid,
             "type": self.coordinator.get_model().ams.data[self.index].tray[2].type,
         },
         exists_fn=lambda coordinator: coordinator.get_model().supports_feature(Features.K_VALUE)
@@ -627,7 +628,7 @@ AMS_SENSORS: tuple[BambuLabSensorEntityDescription, ...] = (
             "nozzle_temp_min": self.coordinator.get_model().ams.data[self.index].tray[3].nozzle_temp_min,
             "nozzle_temp_max": self.coordinator.get_model().ams.data[self.index].tray[3].nozzle_temp_max,
             "remain": self.coordinator.get_model().ams.data[self.index].tray[3].remain,
-            "tag_uid": self.coordinator.get_model().ams.data[self.index].tray[3].tag_uid,
+            "tray_uuid": self.coordinator.get_model().ams.data[self.index].tray[3].tray_uuid,
             "type": self.coordinator.get_model().ams.data[self.index].tray[3].type,
         },
         exists_fn=lambda coordinator: coordinator.get_model().supports_feature(Features.K_VALUE)
