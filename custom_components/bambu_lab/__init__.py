@@ -28,22 +28,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     
     # Register the frontend directory using async method
     url_base: Final = "/static/bambu_lab"
-    await hass.http.async_register_static_paths([
-        StaticPathConfig(
-            url_base,
-            frontend_path,
-            cache_headers=True,
-        )
-    ])
-    
-    # Register the card JavaScript
-    add_extra_js_url(hass, f"{url_base}/bambu-printjobs-card.js")
-
     try:
+        await hass.http.async_register_static_paths([
+            StaticPathConfig(
+                url_base,
+                frontend_path,
+                cache_headers=True,
+            )
+        ])
+        
+        # Register the card JavaScript
+        add_extra_js_url(hass, f"{url_base}/bambu-printjobs-card.js")
+
         # Register as built-in panel
         await async_register_built_in_panel(
             hass,
-            "bambu-lab",
+            component_name="bambu-lab",
             sidebar_title="Bambu Lab",
             sidebar_icon="mdi:printer-3d",
             frontend_url_path="bambu-lab",
@@ -58,9 +58,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             },
         )
     except Exception as e:
-        LOGGER.error(f"Error registering panel: {e}")
-        # Continue even if panel registration fails
-        pass
+        LOGGER.error(f"Error in frontend setup: {e}")
+        # Continue even if frontend setup fails
 
     LOGGER.debug("async_setup_entry Complete")
 
