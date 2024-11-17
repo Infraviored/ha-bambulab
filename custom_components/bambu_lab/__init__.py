@@ -1,11 +1,9 @@
 """The Bambu Lab component."""
 import os
-from typing import Final
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.components.frontend import async_register_built_in_panel, add_extra_js_url
-from homeassistant.components.http import StaticPathConfig
+from homeassistant.components.frontend import add_extra_js_url
 
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .coordinator import BambuDataUpdateCoordinator
@@ -26,40 +24,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     root_path = os.path.dirname(os.path.abspath(__file__))
     frontend_path = os.path.join(root_path, "frontend")
     
-    # Register the frontend directory using async method
-    url_base: Final = "/static/bambu_lab"
-    try:
-        await hass.http.async_register_static_paths([
-            StaticPathConfig(
-                url_base,
-                frontend_path,
-                cache_headers=True,
-            )
-        ])
-        
-        # Register the card JavaScript
-        add_extra_js_url(hass, f"{url_base}/bambu-printjobs-card.js")
-
-        # Register as built-in panel
-        await async_register_built_in_panel(
-            hass,
-            component_name="bambu-lab",
-            sidebar_title="Bambu Lab",
-            sidebar_icon="mdi:printer-3d",
-            frontend_url_path="bambu-lab",
-            require_admin=False,
-            config={
-                "bambu_lab": {
-                    "_panel_custom": {
-                        "name": "bambu-printjobs-card",
-                        "module_url": f"{url_base}/bambu-printjobs-card.js",
-                    }
-                }
-            },
-        )
-    except Exception as e:
-        LOGGER.error(f"Error in frontend setup: {e}")
-        # Continue even if frontend setup fails
+    LOGGER.debug(f"Registering frontend at {frontend_path}")
+    
+    # Register the frontend directory
+    hass.http.register_static_path(
+        "/bambu_lab",
+        frontend_path,
+        cache_headers=True
+    )
+    
+    # Register the card JavaScript
+    add_extra_js_url(hass, "/bambu_lab/bambu-printjobs-card.js")
 
     LOGGER.debug("async_setup_entry Complete")
 
