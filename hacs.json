@@ -1,5 +1,11 @@
 {
   "name": "Bambu Lab",
   "render_readme": true,
-  "homeassistant": "2024.8.1"
+  "homeassistant": "2024.8.1",
+  "iot_class": "Local Push",
+  "content_in_root": false,
+  "zip_release": true,
+  "filename": "bambu_lab.zip",
+  "hide_default_branch": true,
+  "categories": ["Integration", "Frontend"]
 }

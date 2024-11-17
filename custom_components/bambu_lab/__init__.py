@@ -3,8 +3,7 @@ import os
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.network import get_url
-from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.frontend import async_register_built_in_panel, add_extra_js_url
 
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .coordinator import BambuDataUpdateCoordinator
@@ -21,20 +20,34 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Set up all platforms for this device/entry.
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    # Register custom card
+    # Register frontend card
     root_path = os.path.dirname(os.path.abspath(__file__))
-    www_path = os.path.join(root_path, "www")
+    frontend_path = os.path.join(root_path, "frontend")
     
-    # Ensure www directory exists
-    if not os.path.exists(www_path):
-        os.makedirs(www_path)
-    
-    # Register the www directory
+    # Register the frontend directory
     url_base = f"/static/bambu_lab"
-    hass.http.register_static_path(url_base, www_path)
+    hass.http.register_static_path(url_base, frontend_path)
     
     # Register the card JavaScript
     add_extra_js_url(hass, f"{url_base}/bambu-printjobs-card.js")
+
+    # Register as built-in panel
+    await async_register_built_in_panel(
+        hass,
+        "bambu-lab",
+        sidebar_title="Bambu Lab",
+        sidebar_icon="mdi:printer-3d",
+        frontend_url_path="bambu-lab",
+        require_admin=False,
+        config={
+            "bambu_lab": {
+                "_panel_custom": {
+                    "name": "bambu-printjobs-card",
+                    "module_url": f"{url_base}/bambu-printjobs-card.js",
+                }
+            }
+        },
+    )
 
     LOGGER.debug("async_setup_entry Complete")
 
