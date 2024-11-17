@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from dateutil import parser, tz
 from packaging import version
+from pathlib import Path
 
 from .utils import (
     search,
@@ -670,6 +671,26 @@ class PrintJob:
                         local_dt = datetime.fromtimestamp(local_dt.timestamp())
                         self.end_time = local_dt
                         LOGGER.debug(f"CLOUD END TIME2: {self.end_time}")
+
+    def get_job_names(self) -> list[str]:
+        """Get list of available print jobs from cache directory"""
+        try:
+            cache_path = Path(__file__).parent.parent / "cache"
+            if not cache_path.exists():
+                LOGGER.debug("Cache directory not found")
+                return []
+                
+            job_names = []
+            for job_folder in cache_path.iterdir():
+                if (job_folder.is_dir() and 
+                    (job_folder / "Metadata" / "plate_1.png").exists() and 
+                    (job_folder / "Metadata" / "model_settings.config").exists()):
+                    job_names.append(job_folder.name)
+                    
+            return sorted(job_names)  # Sort alphabetically for consistent display
+        except Exception as e:
+            LOGGER.error(f"Error getting job names: {e}")
+            return []
 
 
 @dataclass

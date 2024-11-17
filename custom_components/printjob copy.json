@@ -1,0 +1,33 @@
+{
+  "print": {
+    "sequence_id": "2011",
+    "command": "project_file",
+    "subtask_name": "Föhnhalter.gcode.3mf",
+    "plate_idx": 0,
+    "url": "file:///sdcard/Föhnhalter.gcode.3mf",
+    "bed_leveling": true,
+    "flow_cali": false,
+    "vibration_cali": false,
+    "layer_inspect": false,
+    "ams_mapping": [0, -1],
+    "use_ams": true
+  }
+}
+
+{
+  "print": {
+    "nozzle_temper": 73.53125,
+    "nozzle_target_temper": 75,
+    "bed_temper": 28.0625,
+    "bed_target_temper": 0,
+    "gcode_state": "RUNNING",
+    "mc_remaining_time": 153,
+    "layer_num": 0,
+    "total_layer_num": 903,
+    "mc_percent": 0,
+    "gcode_file": "Föhnhalter.gcode.3mf",
+    "print_type": "local"
+  }
+}
+
+

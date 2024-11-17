@@ -22,3 +22,28 @@ SEND_GCODE_TEMPLATE = {"print": {"sequence_id": "0", "command": "gcode_line", "p
 
 # X1 only currently
 GET_ACCESSORIES = {"system": {"sequence_id": "0", "command": "get_accessories", "accessory_type": "none"}}
+
+# Addition for printing
+PRINT_FILE_TEMPLATE = {
+    "print": {
+        "sequence_id": "0",
+        "command": "project_file",
+        "param": "",  # Will be filled with gcode path
+        "project_id": "0",
+        "profile_id": "0",
+        "task_id": "0",
+        "subtask_id": "0",
+        "subtask_name": "",
+        "file": "",
+        "url": "file:///mnt/sdcard",  # Default SD card path
+        "md5": "",
+        "timelapse": True,
+        "bed_type": "auto",
+        "bed_levelling": True,
+        "flow_cali": True,
+        "vibration_cali": True,
+        "layer_inspect": True,
+        "ams_mapping": "",
+        "use_ams": True
+    }
+}

@@ -182,6 +182,9 @@
       },
       "cover_image": {
         "name": "Cover Image"
+      },
+      "print_job_thumbnail": {
+        "name": "Print Job Thumbnail"
       }
     },
     "light": {
