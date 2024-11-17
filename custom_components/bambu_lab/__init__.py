@@ -1,7 +1,11 @@
 """The Bambu Lab component."""
+import os
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.network import get_url
+from homeassistant.components.frontend import add_extra_js_url
+
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .coordinator import BambuDataUpdateCoordinator
 from .config_flow import CONFIG_VERSION
@@ -17,13 +21,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Set up all platforms for this device/entry.
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    # Reload entry when its updated.
-    #entry.async_on_unload(entry.add_update_listener(async_reload_entry))
+    # Register custom card
+    root_path = os.path.dirname(os.path.abspath(__file__))
+    www_path = os.path.join(root_path, "www")
+    
+    # Ensure www directory exists
+    if not os.path.exists(www_path):
+        os.makedirs(www_path)
+    
+    # Register the www directory
+    url_base = f"/static/bambu_lab"
+    hass.http.register_static_path(url_base, www_path)
+    
+    # Register the card JavaScript
+    add_extra_js_url(hass, f"{url_base}/bambu-printjobs-card.js")
 
     LOGGER.debug("async_setup_entry Complete")
 
-    # Now that we've finished initialization fully, start the MQTT connection so that any necessary
-    # sensor reinitialization happens entirely after the initial setup.
+    # Now that we've finished initialization fully, start the MQTT connection
     await coordinator.start_mqtt()
     
     return True
