@@ -62,7 +62,7 @@ async def async_setup_entry(
         async_add_entities([chamber_image])
 
     if PRINT_JOB_THUMBNAIL.exists_fn(coordinator):
-        job_names = coordinator.data.print_job.get_job_names()
+        job_names = await coordinator.data.print_job.get_job_names()
         LOGGER.debug(f"Found print jobs in cache: {job_names}")
         for job_name in job_names:
             thumbnail = PrintJobThumbnail(hass, coordinator, PRINT_JOB_THUMBNAIL, job_name)

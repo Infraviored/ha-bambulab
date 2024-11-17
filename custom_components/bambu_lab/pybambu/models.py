@@ -1,5 +1,4 @@
 import math
-
 from dataclasses import dataclass, field
 from datetime import datetime
 from dateutil import parser, tz
@@ -672,7 +671,7 @@ class PrintJob:
                         self.end_time = local_dt
                         LOGGER.debug(f"CLOUD END TIME2: {self.end_time}")
 
-    def get_job_names(self) -> list[str]:
+    async def get_job_names(self) -> list[str]:
         """Get list of available print jobs from cache directory"""
         try:
             cache_path = Path(__file__).parent.parent / "cache"
@@ -681,12 +680,15 @@ class PrintJob:
                 return []
                 
             job_names = []
-            for job_folder in cache_path.iterdir():
-                if (job_folder.is_dir() and 
-                    (job_folder / "Metadata" / "plate_1.png").exists() and 
-                    (job_folder / "Metadata" / "model_settings.config").exists()):
-                    job_names.append(job_folder.name)
-                    
+            if cache_path.is_dir():
+                # Use os.scandir which is more efficient than iterdir
+                with os.scandir(cache_path) as entries:
+                    for entry in entries:
+                        if (entry.is_dir() and 
+                            (Path(entry.path) / "Metadata" / "plate_1.png").exists() and 
+                            (Path(entry.path) / "Metadata" / "model_settings.config").exists()):
+                            job_names.append(entry.name)
+                        
             return sorted(job_names)  # Sort alphabetically for consistent display
         except Exception as e:
             LOGGER.error(f"Error getting job names: {e}")
