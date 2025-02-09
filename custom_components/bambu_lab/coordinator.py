@@ -4,22 +4,36 @@ from .const import (
     BRAND,
     DOMAIN,
     LOGGER,
-    LOGGERFORHA
+    LOGGERFORHA,
+    Options,
+    OPTION_NAME,
 )
 import asyncio
 from typing import Any
 
+from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers import device_registry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.core import Event, HomeAssistant, callback
-from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
-
-import paho.mqtt.client as mqtt
+from homeassistant.const import (
+    EVENT_HOMEASSISTANT_STOP,
+    Platform
+)
 
 from .pybambu import BambuClient
-from .pybambu.const import Features
+from .pybambu.const import (
+    Features,
+    PRINT_PROJECT_FILE_BUS_EVENT,
+    SEND_GCODE_BUS_EVENT,
+    SKIP_OBJECTS_BUS_EVENT,
+)
+from .pybambu.commands import (
+    PRINT_PROJECT_FILE_TEMPLATE,
+    SEND_GCODE_TEMPLATE,
+    SKIP_OBJECTS_TEMPLATE,
+)
 
 class BambuDataUpdateCoordinator(DataUpdateCoordinator):
     hass: HomeAssistant
@@ -34,6 +48,7 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         self.latest_usage_hours = float(entry.options.get('usage_hours', 0))
         config = entry.data.copy()
         config.update(entry.options.items())
+        config['user_language'] = hass.config.language
         self.client = BambuClient(config)
             
         self._updatedDevice = False
@@ -48,6 +63,9 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         )
 
         self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, self._async_shutdown)
+        self.hass.bus.async_listen(PRINT_PROJECT_FILE_BUS_EVENT, self._service_call_print_project_file)
+        self.hass.bus.async_listen(SEND_GCODE_BUS_EVENT, self._service_call_send_gcode)
+        self.hass.bus.async_listen(SKIP_OBJECTS_BUS_EVENT, self._service_call_skip_objects)
 
     @callback
     def _async_shutdown(self, event: Event) -> None:
@@ -55,11 +73,11 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         LOGGER.debug(f"HOME ASSISTANT IS SHUTTING DOWN")
         self.shutdown()
 
-    def event_handler(self, event):
+    def event_handler(self, event: str):
         # The callback comes in on the MQTT thread. Need to jump to the HA main thread to guarantee thread safety.
         self._eventloop.call_soon_threadsafe(self.event_handler_internal, event)
 
-    def event_handler_internal(self, event):
+    def event_handler_internal(self, event: str):
         # if event != "event_printer_chamber_image_update":
         #     LOGGER.debug(f"EVENT: {event}")
 
@@ -92,30 +110,25 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
                     data=self.config_entry.data,
                     options=options)
 
-        elif event == "event_hms_errors":
-            self._update_hms()
-
-        elif event == "event_print_error":
-            self._update_print_error()
-
-        elif event == "event_print_canceled":
-            self.PublishDeviceTriggerEvent(event)
-
-        elif event == "event_print_failed":
-            self.PublishDeviceTriggerEvent(event)
-
-        elif event == "event_print_finished":
-            self.PublishDeviceTriggerEvent(event)
-
-        elif event == "event_print_started":
-            self.PublishDeviceTriggerEvent(event)
-
         elif event == "event_printer_chamber_image_update":
-            if self.camera_as_image_sensor:
+            if self.get_option_enabled(Options.IMAGECAMERA):
                 self._update_data()
 
         elif event == "event_printer_cover_image_update":
             self._update_data()
+
+        elif event == "event_printer_error":
+            self._update_printer_error()
+
+        elif event == "event_print_error":
+            self._update_print_error()
+
+        # event_print_started
+        # event_print_finished
+        # event_print_canceled
+        # event_print_failed
+        elif 'event_print_' in event:
+            self.PublishDeviceTriggerEvent(event)
 
     async def listen(self):
         LOGGER.debug("Starting listen()")
@@ -133,6 +146,66 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
     async def _publish(self, msg):
         return self.client.publish(msg)
 
+    def _service_call_is_for_me(self, data: dict):
+        dev_reg = device_registry.async_get(self._hass)
+        hadevice = dev_reg.async_get_device(identifiers={(DOMAIN, self.get_model().info.serial)})
+        device_id = data.get('device_id', [])
+        if len(device_id) != 1:
+            LOGGER.error("Invalid skip objects data payload: {data}")
+            return False
+
+        return (device_id[0] == hadevice.id)
+
+    def _service_call_skip_objects(self, event: Event):
+        data = event.data
+        if not self._service_call_is_for_me(data):
+            return
+        
+        LOGGER.debug(f"_service_call_skip_objects: {data}")
+        command = SKIP_OBJECTS_TEMPLATE
+        object_ids = data.get("objects")
+        command["print"]["obj_list"] = [int(x) for x in object_ids.split(',')]
+        self.client.publish(command)
+
+    def _service_call_send_gcode(self, event: Event):
+        data = event.data
+        if not self._service_call_is_for_me(data):
+            return
+        
+        LOGGER.debug(f"_service_call_send_gcode: {data}")
+        command = SEND_GCODE_TEMPLATE
+        command['print']['param'] = f"{data.get('command')}\n"
+        self.client.publish(command)
+
+    def _service_call_print_project_file(self, event: Event):
+        data = event.data
+        if not self._service_call_is_for_me(data):
+            return
+        
+        LOGGER.debug(f"_service_call_print_project_file: {data}")
+        command = PRINT_PROJECT_FILE_TEMPLATE
+        file = data.get("filepath")
+        plate = data.get("plate")
+        timelapse = data.get("timelapse")
+        bed_leveling = data.get("bed_leveling")
+        flow_cali = data.get("flow_cali")
+        vibration_cali = data.get("vibration_cali")
+        layer_inspect = data.get("layer_inspect")
+        use_ams = data.get("use_ams")
+        ams_mapping = data.get("ams_mapping")
+
+        command["print"]["param"] = f"Metadata/plate_{plate}.gcode"
+        command["print"]["url"] = f"ftp://{file}"
+        command["print"]["timelapse"] = timelapse
+        command["print"]["bed_leveling"] = bed_leveling
+        command["print"]["flow_cali"] = flow_cali
+        command["print"]["vibration_cali"] = vibration_cali
+        command["print"]["layer_inspect"] = layer_inspect
+        command["print"]["use_ams"] = use_ams
+        command["print"]["ams_mapping"] = [int(x) for x in ams_mapping.split(',')]
+
+        coordinator.client.publish(command)
+
     async def _async_update_data(self):
         LOGGER.debug(f"_async_update_data() called")
         device = self.get_model()
@@ -147,29 +220,29 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
             LOGGER.error(f"Exception type: {type(e)}")
             LOGGER.error(f"Exception data: {e}")
 
-    def _update_hms(self):
+    def _update_printer_error(self):
         dev_reg = device_registry.async_get(self._hass)
         hadevice = dev_reg.async_get_device(identifiers={(DOMAIN, self.get_model().info.serial)})
-
         device = self.get_model()
         if device.hms.error_count == 0:
             event_data = {
                 "device_id": hadevice.id,
+                "name": self.config_entry.options.get('name', ''),
                 "type": "event_printer_error_cleared",
             }
             LOGGER.debug(f"EVENT: HMS errors cleared: {event_data}")
             self._hass.bus.async_fire(f"{DOMAIN}_event", event_data)
         else:
-            for index in range (device.hms.error_count):
-                event_data = {
-                    "device_id": hadevice.id,
-                    "type": "event_printer_error",
-                }
-                event_data["hms_code"] = device.hms.errors[f"{index+1}-Error"][:device.hms.errors[f"{index+1}-Error"].index(':')]
-                event_data["description"] = device.hms.errors[f"{index+1}-Error"][device.hms.errors[f"{index+1}-Error"].index(':')+2:]
-                event_data["url"] = device.hms.errors[f"{index+1}-Wiki"]
-                LOGGER.debug(f"EVENT: HMS errors: {event_data}")
-                self._hass.bus.async_fire(f"{DOMAIN}_event", event_data)
+            event_data = {
+                "device_id": hadevice.id,
+                "name": self.config_entry.options.get('name', ''),
+                "type": "event_printer_error",
+            }
+            event_data["code"] = device.hms.errors[f"1-Code"]
+            event_data["error"] = device.hms.errors[f"1-Error"]
+            event_data["url"] = device.hms.errors[f"1-Wiki"]
+            LOGGER.debug(f"EVENT: HMS errors: {event_data}")
+            self._hass.bus.async_fire(f"{DOMAIN}_event", event_data)
 
     def _update_print_error(self):
         dev_reg = device_registry.async_get(self._hass)
@@ -179,18 +252,18 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
         if device.print_error.on == 0:
             event_data = {
                 "device_id": hadevice.id,
-                "type": "event_printer_error_cleared",
+                "name": self.config_entry.options.get('name', ''),
+                "type": "event_print_error_cleared",
             }
             LOGGER.debug(f"EVENT: print_error cleared: {event_data}")
         else:
             event_data = {
                 "device_id": hadevice.id,
-                "type": "event_printer_error",
+                "name": self.config_entry.options.get('name', ''),
+                "type": "event_print_error",
             }
-            if 'Code' in device.print_error.error:
-                event_data["Code"] = device.print_error.error['Code']
-            if 'Error' in device.print_error.error:
-                event_data["Error"] = device.print_error.error['Error']
+            event_data["code"] = device.print_error.error['code']
+            event_data["error"] = device.print_error.error['error']
             LOGGER.debug(f"EVENT: print_error: {event_data}")
         self._hass.bus.async_fire(f"{DOMAIN}_event", event_data)
 
@@ -267,11 +340,11 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
 
         event_data = {
             "device_id": hadevice.id,
+            "name": self.config_entry.options.get('name', ''),
             "type": event,
         }
         LOGGER.debug(f"BUS EVENT: {event}: {event_data}")
         self._hass.bus.async_fire(f"{DOMAIN}_event", event_data)
-        
 
     def get_model(self):
         return self.client.get_device()
@@ -320,46 +393,40 @@ class BambuDataUpdateCoordinator(DataUpdateCoordinator):
             sw_version=""
         )
 
-    async def set_manual_refresh_mode(self, manual_refresh_mode):
-        await self.client.set_manual_refresh_mode(manual_refresh_mode)
+    def get_option_enabled(self, option: Options):
         options = dict(self.config_entry.options)
-        options['manual_refresh_mode'] = manual_refresh_mode
+
+        default = False
+        match option:
+            case Options.CAMERA:
+                default = True
+
+        return options.get(OPTION_NAME[option], default)
+        
+    async def set_option_enabled(self, option: Options, enable: bool):
+        LOGGER.debug(f"Setting {OPTION_NAME[option]} to {enable}")
+        options = dict(self.config_entry.options)
+        options[OPTION_NAME[option]] = enable
         self._hass.config_entries.async_update_entry(
             entry=self.config_entry,
             title=self.get_model().info.serial,
             data=self.config_entry.data,
             options=options)
+        
+        if option == Options.MANUALREFRESH:
+            await self.client.set_manual_refresh_mode(enable)
+        
+        force_reload = False
+        match option:
+            case Options.CAMERA:
+                force_reload = True
+            case Options.IMAGECAMERA:
+                force_reload = True
+            case Options.FTP:
+                force_reload = True
+            case Options.TIMELAPSE:
+                force_reload = True
 
-    @property
-    def camera_enabled(self):
-        options = dict(self.config_entry.options)
-        return options.get('enable_camera', True)
-
-    async def set_camera_enabled(self, enable):
-        LOGGER.debug(f"Setting camera enabled to {enable}")
-        options = dict(self.config_entry.options)
-        options['enable_camera'] = enable
-        self._hass.config_entries.async_update_entry(
-            entry=self.config_entry,
-            title=self.get_model().info.serial,
-            data=self.config_entry.data,
-            options=options)
-        # Force reload of sensors.
-        return await self.hass.config_entries.async_reload(self._entry.entry_id)
-
-    @property
-    def camera_as_image_sensor(self):
-        options = dict(self.config_entry.options)
-        return options.get('camera_as_image_sensor', False)
-
-    async def set_camera_as_image_sensor(self, enable):
-        LOGGER.debug(f"Setting camera_as_image_sensor to {enable}")
-        options = dict(self.config_entry.options)
-        options['camera_as_image_sensor'] = enable
-        self._hass.config_entries.async_update_entry(
-            entry=self.config_entry,
-            title=self.get_model().info.serial,
-            data=self.config_entry.data,
-            options=options)
-        # Force reload of sensors.
-        return await self.hass.config_entries.async_reload(self._entry.entry_id)
+        if force_reload:
+            # Force reload of sensors.
+            return await self.hass.config_entries.async_reload(self._entry.entry_id)

@@ -5,7 +5,10 @@
       "event_print_failed": "Impressão falhada",
       "event_print_finished": "Impressão terminada",
       "event_print_started": "Impressão iniciada",
-      "event_printer_error": "Erro na impressora detetado"
+      "event_print_error": "Erro de impressão",
+      "event_print_error_cleared": "Erro de impressão eliminado",
+      "event_printer_error": "Erro HMS",
+      "event_printer_error_cleared": "Erro HMS eliminado"
     }
   },
   "config": {
@@ -21,39 +24,40 @@
       "cannot_connect_local_all": "Falha ao ligar. Verifique as definições fornecidas.",
       "invalid_auth": "Autenticação inválida.",
       "unknown": "Erro inesperado.",
-      "verifyCode": "O código de verificação é obrigatório. ",
-      "code_expired": "O código de verificação expirou. ",
+      "code_needed": "O código de verificação deve ser fornecido.",
+      "verifyCode": "O código de verificação é obrigatório. Verifique seu e-mail ou telefone.",
+      "code_expired": "O código de verificação expirou. Novo código solicitado. Verifique seu e-mail ou telefone.",
       "code_incorrect": "O código de verificação estava incorreto. ",
       "tfaCode": "O código 2FA é obrigatório. "
     },
     "step": {
       "user": {
-        "description": "A configuração através da Bambu Cloud é a mais simples. No entanto, não suporta autenticação 2FA ou contas de redes sociais sem palavra-passe, e não funciona para impressoras definidas como Modo Lan Apenas.",
+        "description": "A configuração via nuvem Bambu Lab é mais simples e rápida. Contas de redes sociais sem senha não são suportadas.\n\rVocê também pode reutilizar credenciais de autenticação funcionais de outras impressoras. Se encontrados, eles serão listados pelo endereço de e-mail.\n\rOu você pode conectar-se fornecendo manualmente os detalhes da conexão local da impressora. Isso é necessário para uma impressora no modo Lan.",
         "data": {
           "printer_mode": "Modo de configuração da impressora:"
         }
       },
       "Bambu": {
-        "title": "Ligação Bambu Cloud",
+        "title": "Conexão em nuvem do Bambu Lab",
         "description": "Forneça as suas credenciais da Bambu Lab:",
         "data": {
           "region": "Região da conta:",
           "email": "Endereço de Email ou Número de Telefone",
           "password": "Palavra-passe",
-          "verifyCode": "Código de verificação de e-mail",
+          "newCode": "Solicitar novo código",
+          "verifyCode": "Código de verificação por e-mail ou telefone",
           "tfaCode": "Código de autenticação de dois fatores"
         }
       },
       "Bambu_Choose_Device": {
         "title": "Seleção da Impressora",
-        "description": "Escolha a impressora que pretende adicionar.",
         "data": {
-          "serial": "Escolha a Impressora a Adicionar:"
+          "serial": "Escolha a impressora a ser adicionada:"
         }
       },
       "Bambu_Lan": {
         "title": "Configurar Ligação Local",
-        "description": "Pode opcionalmente fornecer o endereço IP da impressora e o código de acesso. Isto é necessário para aceder à câmara no P1/A1 ou para ligar diretamente à impressora em vez de através da Bambu Cloud.",
+        "description": "Você pode optar por conectar-se diretamente à impressora para atualizações de status, em vez de usar a nuvem do Bambu Lab. Isso lhe dá resiliência às interrupções na nuvem do Bambu Lab, mas o Bambu Lab restringiu o controle da impressora neste modo híbrido, portanto alguns controles estarão indisponíveis.",
         "data": {
           "local_mqtt": "Ligar localmente à impressora:",
           "host": "Endereço IP Local da Impressora:",
@@ -84,38 +88,40 @@
       "cannot_connect_local_all": "Falha ao ligar. Verifique as definições fornecidas.",
       "invalid_auth": "Autenticação inválida.",
       "unknown": "Erro inesperado.",
-      "verifyCode": "O código de verificação é obrigatório. ",
-      "code_expired": "O código de verificação expirou. ",
+      "code_needed": "O código de verificação deve ser fornecido.",
+      "verifyCode": "O código de verificação é obrigatório. Verifique seu e-mail ou telefone.",
+      "code_expired": "O código de verificação expirou. Novo código solicitado. Verifique seu e-mail ou telefone.",
       "code_incorrect": "O código de verificação estava incorreto. ",
       "tfaCode": "O código 2FA é obrigatório. "
     },
     "step": {
       "init": {
         "title": "Ajustar definições de ligação",
-        "description": "A configuração através da Bambu Cloud é a mais simples. No entanto, não suporta autenticação 2FA ou contas de redes sociais sem palavra-passe, e não funciona para impressoras definidas como Modo Lan Apenas.",
+        "description": "A configuração via nuvem Bambu Lab é mais simples e rápida. Contas de redes sociais sem senha não são suportadas.\n\rVocê também pode reutilizar credenciais de autenticação funcionais de outras impressoras. Se encontrados, eles serão listados pelo endereço de e-mail.\n\rOu você pode conectar-se fornecendo manualmente os detalhes da conexão local da impressora. Isso é necessário para uma impressora no modo Lan.",
         "data": {
           "printer_mode": "Modo de configuração da impressora:"
         }
       },
       "Bambu": {
-        "title": "Ligação Bambu Cloud",
+        "title": "Conexão em nuvem do Bambu Lab",
         "description": "Forneça as suas credenciais da Bambu Lab:",
         "data": {
           "region": "Região da conta:",
           "email": "Endereço de Email ou Número de Telefone",
           "password": "Palavra-passe",
-          "verifyCode": "Código de verificação de e-mail",
+          "newCode": "Solicitar novo código",
+          "verifyCode": "Código de verificação por e-mail ou telefone",
           "tfaCode": "Código de autenticação de dois fatores"
         }
       },
       "Bambu_Lan": {
         "title": "Ajustar Configuração da Impressora",
-        "description": "Pode opcionalmente fornecer o endereço IP local da impressora e o código de acesso. Isto é necessário para aceder à câmara no P1/A1 ou para ligar diretamente à impressora em vez de através da Bambu Cloud.",
+        "description": "Você pode optar por conectar-se diretamente à impressora para atualizações de status, em vez de usar a nuvem do Bambu Lab. Isso lhe dá resiliência às interrupções na nuvem do Bambu Lab, mas o Bambu Lab restringiu o controle da impressora neste modo híbrido, portanto alguns controles estarão indisponíveis.",
         "data": {
-          "serial": "Escolha a Impressora a Adicionar:",
+          "serial": "Ajuste as configurações para:",
           "host": "Endereço IP Local da Impressora:",
           "access_code": "Código de Acesso:",
-          "local_mqtt": "Ligar diretamente à impressora em vez de via Bambu Cloud:",
+          "local_mqtt": "Conecte-se diretamente à impressora em vez da nuvem do Bambu Lab:",
           "usage_hours": "Horas de utilização atuais (opcional):"
         }
       },
@@ -163,6 +169,9 @@
       },
       "refresh": {
         "name": "Forçar atualização de dados"
+      },
+      "dev": {
+        "name": "Depurar"
       }
     },
     "fan": {
@@ -182,6 +191,9 @@
       },
       "cover_image": {
         "name": "Imagem de capa"
+      },
+      "pick_image": {
+        "name": "Escolha a imagem"
       }
     },
     "light": {
@@ -322,7 +334,7 @@
         "name": "Modo de conexão MQTT",
         "state": {
           "local": "Local",
-          "bambu_cloud": "Nuvem de bambu"
+          "bambu_cloud": "Nuvem Bambu Lab"
         }
       },
       "gcode_file": {
@@ -486,7 +498,7 @@
             "name": "Filamento restante"
           },
           "tag_uid": {
-            "name": "Número de série do filamento"
+            "name": "Número de série do carretel"
           },
           "type": {
             "name": "Tipo"
@@ -521,7 +533,7 @@
             "name": "Filamento restante"
           },
           "tag_uid": {
-            "name": "Número de série do filamento"
+            "name": "Número de série do carretel"
           },
           "type": {
             "name": "Tipo"
@@ -556,12 +568,21 @@
             "name": "Filamento restante"
           },
           "tag_uid": {
-            "name": "Número de série do filamento"
+            "name": "Número de série do carretel"
           },
           "type": {
             "name": "Tipo"
           }
         }
+      },
+      "ip_address": {
+        "name": "Endereço IP"
+      },
+      "printable_objects": {
+        "name": "Objetos imprimíveis"
+      },
+      "skipped_objects": {
+        "name": "Objetos ignorados"
       }
     },
     "camera": {
@@ -578,6 +599,23 @@
       },
       "imagecamera": {
         "name": "Use câmera com sensor de imagem"
+      },
+      "prompt_sound": {
+        "name": "Permitir som de aviso"
+      },
+      "ftp": {
+        "name": "Carregar dados do modelo de impressora"
+      },
+      "timelapse": {
+        "name": "Carregue o mais recente timelapse da impressora"
+      }
+    }
+  },
+  "selector": {
+    "configuration_type": {
+      "options": {
+        "bambu": "Nuvem Bambu Lab",
+        "lan": "Modo LAN"
       }
     }
   }

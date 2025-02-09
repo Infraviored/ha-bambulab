@@ -1,6 +1,55 @@
+### V2.1.0
+- Add the new cards frontend into this repo and install as part of this integration instead of separately.
+- Fix mishandling of X1C/E causing setup failure
+- Enable ability to load model data from printer via FTP
+
+### V2.0.46
+- Fix integration setup failures with older printer firmwares take 2
+
+### V2.0.45
+- Fix integration setup failures with older printer firmwares
+
+### V2.0.44
+- Fix for model FTP download being active when it shouldn't be yet (not fully ready)
+- Add start of timelapse download support (disabled)
+
+### V2.0.43
+- Fix for camera take 2
+
+### V2.0.42
+- Fix for ip address not present in mqtt payload with older firmwares
+
+### V2.0.41
+- Updated config/options cloud flows to get printer IP address from the cloud mqtt payload
+- Converted auto translation script to python and updated it to delete removed strings and re-localized changed English strings.
+- Delete cloud authentication data if a printer is reconfigured to lan mode.
+- Updated P1/A1 camera access to use IP address from mqtt payload.
+- Add new print from file service.
+
+### V2.0.40
+- Allow phone numbers with the home assistant form complaining
+- Only do slicer setting retrieval on successful printer connection to reduce triggering cloudflare throttling.
+- Addition of Danish, Slovak and Portuguese
+- Add control for A1 prompt sound
+- Fix detection of reusable credentials
+- Addition of A1 specific "check nozzle" 'error' when loading a filament.
+
+### V2.0.39
+- Removed unsupported wled blueprint
+- Simplified hms errors
+- Fallback to requests if cloudscraper isn't available
+- Updated translations
+- Allow different credentials to be provided when adding a printer
+- Add service to send arbitrary gcode
+- Improvements email and sms code handling
+- Misc fixes
+
 ### V2.0.38
+- Fix to handle authentication changes in China
 - Improved Spanish translations
-- Backup way to get user_id for mqtt cloud connection
+- Cleanup device trigger events and add print error device trigger events
+- Update filament list
+- Update errors list
 
 ### V2.0.37
 - Switch back to cloudscraper from curl_cffi as Bambu cloudflare has stopped blocking it

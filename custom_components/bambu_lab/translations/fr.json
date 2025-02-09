@@ -5,7 +5,10 @@
       "event_print_failed": "Échec de l'impression",
       "event_print_finished": "Impression terminée",
       "event_print_started": "L'impression a commencé",
-      "event_printer_error": "Erreur d'imprimante détectée"
+      "event_print_error": "Erreur d'impression",
+      "event_print_error_cleared": "Erreur d'impression effacée",
+      "event_printer_error": "Erreur HMS",
+      "event_printer_error_cleared": "Erreur HMS effacée"
     }
   },
   "config": {
@@ -21,39 +24,40 @@
       "cannot_connect_local_all": "Echec de la connexion. Vérifiez les paramètres fournis.",
       "invalid_auth": "Authentification invalide.",
       "unknown": "Erreur inattendue.",
-      "verifyCode": "Un code de vérification est requis. ",
-      "code_expired": "Le code de vérification a expiré. ",
+      "code_needed": "Le code de vérification doit être fourni.",
+      "verifyCode": "Un code de vérification est requis. Vérifiez votre courrier électronique ou votre téléphone.",
+      "code_expired": "Le code de vérification a expiré. Nouveau code demandé. Vérifiez votre courrier électronique ou votre téléphone.",
       "code_incorrect": "Le code de vérification était incorrect. ",
       "tfaCode": "Le code 2FA est requis. "
     },
     "step": {
       "user": {
-        "description": "La configuration via Bambu Cloud est la plus simple. Mais ne prend pas en charge l’authentification à 2 facteurs ou les comptes de médias sociaux sans mot de passe. Et cela ne fonctionnera pas pour les imprimantes actives en mode LAN uniquement.",
+        "description": "La configuration via le cloud Bambu Lab est la plus simple et la plus rapide. Les comptes de réseaux sociaux sans mot de passe ne sont pas pris en charge.\n\rVous pouvez également réutiliser les informations d'authentification fonctionnelles d'autres imprimantes. S'ils sont trouvés, ils seront répertoriés par adresse e-mail.\n\rVous pouvez également vous connecter en fournissant manuellement les détails de connexion locale de l'imprimante. Ceci est requis pour une imprimante en mode Lan.",
         "data": {
           "printer_mode": "Mode de configuration de l’imprimante :"
         }
       },
       "Bambu": {
-        "title": "Connexion au cloud Bambu",
+        "title": "Connexion au cloud du Bambu Lab",
         "description": "Veuillez fournir vos informations d’identification Bambu Lab :",
         "data": {
           "region": "Région du compte :",
           "email": "Adresse e-mail ou numéro de téléphone",
           "password": "Mot de passe",
-          "verifyCode": "Code de vérification de l'e-mail",
+          "newCode": "Demander un nouveau code",
+          "verifyCode": "Code de vérification par e-mail ou par téléphone",
           "tfaCode": "Code d'authentification à deux facteurs"
         }
       },
       "Bambu_Choose_Device": {
         "title": "Sélection de l’imprimante",
-        "description": "Choisissez l’imprimante que vous souhaitez ajouter.",
         "data": {
-          "serial": "Choisissez l’imprimante à ajouter :"
+          "serial": "Choisissez l'imprimante à ajouter :"
         }
       },
       "Bambu_Lan": {
         "title": "Configurer la connexion locale",
-        "description": "Vous pouvez éventuellement fournir l’adresse IP et le code d’accès de l’imprimante locale. Ceci est nécessaire pour l’accès à la caméra sur le P1/A1. Ou de pouvoir se connecter directement à l’imprimante plutôt que via Bambu Cloud.",
+        "description": "Vous pouvez choisir de vous connecter directement à l'imprimante pour les mises à jour d'état plutôt que via le cloud Bambu Lab. Cela vous donne une résilience aux pannes de cloud de Bambu Lab, mais Bambu Lab a restreint le contrôle de l'imprimante dans ce mode hybride, de sorte que certains contrôles seront indisponibles.",
         "data": {
           "local_mqtt": "Connectez-vous directement à l’imprimante au lieu de passer par Bambu Cloud :",
           "host": "Adresse IP de l’imprimante locale :",
@@ -84,38 +88,40 @@
       "cannot_connect_local_all": "Echec de la connexion. Vérifiez les paramètres fournis.",
       "invalid_auth": "Authentification invalide.",
       "unknown": "Erreur inattendue.",
-      "verifyCode": "Un code de vérification est requis. ",
-      "code_expired": "Le code de vérification a expiré. ",
+      "code_needed": "Le code de vérification doit être fourni.",
+      "verifyCode": "Un code de vérification est requis. Vérifiez votre courrier électronique ou votre téléphone.",
+      "code_expired": "Le code de vérification a expiré. Nouveau code demandé. Vérifiez votre courrier électronique ou votre téléphone.",
       "code_incorrect": "Le code de vérification était incorrect. ",
       "tfaCode": "Le code 2FA est requis. "
     },
     "step": {
       "init": {
         "title": "Ajuster les paramètres de connexion",
-        "description": "La configuration via Bambu Cloud est la plus simple. Mais ne prend pas en charge l’authentification à 2 facteurs ou les comptes de médias sociaux sans mot de passe. Et cela ne fonctionnera pas pour les imprimantes actives en mode LAN uniquement.",
+        "description": "La configuration via le cloud Bambu Lab est la plus simple et la plus rapide. Les comptes de réseaux sociaux sans mot de passe ne sont pas pris en charge.\n\rVous pouvez également réutiliser les informations d'authentification fonctionnelles d'autres imprimantes. S'ils sont trouvés, ils seront répertoriés par adresse e-mail.\n\rVous pouvez également vous connecter en fournissant manuellement les détails de connexion locale de l'imprimante. Ceci est requis pour une imprimante en mode Lan.",
         "data": {
           "printer_mode": "Mode de configuration de l’imprimante :"
         }
       },
       "Bambu": {
-        "title": "Connexion au cloud Bambu",
+        "title": "Connexion au cloud du Bambu Lab",
         "description": "Veuillez fournir vos informations d’identification Bambu Lab :",
         "data": {
           "region": "Région du compte :",
           "email": "Adresse e-mail ou numéro de téléphone",
           "password": "Mot de passe",
-          "verifyCode": "Code de vérification de l'e-mail",
+          "newCode": "Demander un nouveau code",
+          "verifyCode": "Code de vérification par e-mail ou par téléphone",
           "tfaCode": "Code d'authentification à deux facteurs"
         }
       },
       "Bambu_Lan": {
         "title": "Ajuster la configuration de l’imprimante",
-        "description": "Vous pouvez éventuellement fournir l’adresse IP et le code d’accès de l’imprimante locale. Ceci est nécessaire pour l’accès à la caméra sur le P1/A1. Ou de pouvoir se connecter directement à l’imprimante plutôt que via Bambu Cloud.",
+        "description": "Vous pouvez choisir de vous connecter directement à l'imprimante pour les mises à jour d'état plutôt que via le cloud Bambu Lab. Cela vous donne une résilience aux pannes de cloud de Bambu Lab, mais Bambu Lab a restreint le contrôle de l'imprimante dans ce mode hybride, de sorte que certains contrôles seront indisponibles.",
         "data": {
-          "serial": "Choisissez l’imprimante à ajouter :",
+          "serial": "Ajustez les paramètres pour :",
           "host": "Adresse IP de l’imprimante locale :",
           "access_code": "Code d'accès :",
-          "local_mqtt": "Connectez-vous directement à l’imprimante au lieu de passer par Bambu Cloud :",
+          "local_mqtt": "Connectez-vous directement à l'imprimante plutôt que via le cloud Bambu Lab :",
           "usage_hours": "Heures d'utilisation actuelles (facultatif) :"
         }
       },
@@ -163,6 +169,9 @@
       },
       "refresh": {
         "name": "Forcer l'actualisation des données"
+      },
+      "dev": {
+        "name": "Déboguer"
       }
     },
     "fan": {
@@ -182,6 +191,9 @@
       },
       "cover_image": {
         "name": "Image de couverture"
+      },
+      "pick_image": {
+        "name": "Choisir l'image"
       }
     },
     "light": {
@@ -322,7 +334,7 @@
         "name": "Mode de connexion MQTT",
         "state": {
           "local": "Locale",
-          "bambu_cloud": "Nuage de bambou"
+          "bambu_cloud": "Nuage Bambu Lab"
         }
       },
       "gcode_file": {
@@ -562,6 +574,15 @@
             "name": "Type"
           }
         }
+      },
+      "ip_address": {
+        "name": "Adresse IP"
+      },
+      "printable_objects": {
+        "name": "Objets imprimables"
+      },
+      "skipped_objects": {
+        "name": "Objets sautés"
       }
     },
     "camera": {
@@ -578,6 +599,23 @@
       },
       "imagecamera": {
         "name": "Utiliser une caméra à capteur d'image"
+      },
+      "prompt_sound": {
+        "name": "Autoriser le son d'invite"
+      },
+      "ftp": {
+        "name": "Charge des données du modèle de l'imprimante"
+      },
+      "timelapse": {
+        "name": "Chargez le dernier timelapse de l'imprimante"
+      }
+    }
+  },
+  "selector": {
+    "configuration_type": {
+      "options": {
+        "bambu": "Nuage Bambu Lab",
+        "lan": "Mode réseau"
       }
     }
   }

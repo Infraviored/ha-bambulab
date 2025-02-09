@@ -5,7 +5,10 @@
       "event_print_failed": "출력 실패",
       "event_print_finished": "출력 완료됨",
       "event_print_started": "출력 시작됨",
-      "event_printer_error": "프린터 오류 감지됨"
+      "event_print_error": "인쇄 오류",
+      "event_print_error_cleared": "인쇄 오류가 해결되었습니다.",
+      "event_printer_error": "HMS 오류",
+      "event_printer_error_cleared": "HMS 오류가 해결되었습니다."
     }
   },
   "config": {
@@ -21,39 +24,40 @@
       "cannot_connect_local_all": "연결에 실패했습니다. 제공된 설정을 확인하세요.",
       "invalid_auth": "잘못된 인증 정보입니다.",
       "unknown": "예기치 않은 오류입니다.",
-      "verifyCode": "인증코드가 필요합니다. ",
-      "code_expired": "인증 코드가 만료되었습니다. ",
+      "code_needed": "인증 코드를 제공해야 합니다.",
+      "verifyCode": "인증코드가 필요합니다. 이메일이나 전화를 확인하세요.",
+      "code_expired": "인증 코드가 만료되었습니다. 새로운 코드가 요청되었습니다. 이메일이나 전화를 확인하세요.",
       "code_incorrect": "인증코드가 올바르지 않습니다. ",
       "tfaCode": "2FA 코드가 필요합니다. "
     },
     "step": {
       "user": {
-        "description": "Bambu Cloud를 통해 구성하는 것이 가장 간단합니다. 그러나 2FA 또는 비밀번호가 없는 소셜 미디어 계정은 지원되지 않으며, Lan Only Mode로 설정된 프린터에는 사용할 수 없습니다.",
+        "description": "Bambu Lab 클라우드를 통한 구성은 가장 간단하고 빠릅니다. 비밀번호가 없는 소셜 미디어 계정은 지원되지 않습니다.\n\r다른 프린터에서 작동하는 인증 자격 증명을 재사용할 수도 있습니다. 발견되면 이메일 주소로 나열됩니다.\n\r또는 프린터 로컬 연결 세부 정보를 수동으로 제공하여 연결할 수 있습니다. 이는 LAN 모드의 프린터에 필요합니다.",
         "data": {
           "printer_mode": "프린터 구성 모드:"
         }
       },
       "Bambu": {
-        "title": "Bambu Cloud 연결",
+        "title": "Bambu Lab 클라우드 연결",
         "description": "Bambu Lab 자격 증명을 제공하세요:",
         "data": {
           "region": "계정 지역:",
           "email": "이메일 주소 또는 전화번호",
           "password": "비밀번호",
-          "verifyCode": "이메일 인증 코드",
+          "newCode": "새 코드 요청",
+          "verifyCode": "이메일 또는 전화 인증 코드",
           "tfaCode": "2단계 인증 코드"
         }
       },
       "Bambu_Choose_Device": {
         "title": "프린터 선택",
-        "description": "추가할 프린터를 선택하세요.",
         "data": {
           "serial": "추가할 프린터 선택:"
         }
       },
       "Bambu_Lan": {
         "title": "로컬 연결 설정",
-        "description": "로컬 프린터 IP 주소와 접근 코드를 제공할 수 있습니다. 이는 P1/A1의 카메라 접근에 필요하거나, Bambu Cloud 대신 프린터에 직접 연결할 수 있도록 합니다.",
+        "description": "상태 업데이트를 위해 Bambu Lab 클라우드 대신 프린터에 직접 연결하도록 선택할 수 있습니다. 이렇게 하면 Bambu Lab 클라우드 중단에 대한 복원력이 제공되지만 Bambu Lab은 이 하이브리드 모드에 있을 때 프린터 제어를 제한하므로 일부 제어를 사용할 수 없습니다.",
         "data": {
           "local_mqtt": "로컬에서 프린터에 연결:",
           "host": "로컬 프린터 IP 주소:",
@@ -84,38 +88,40 @@
       "cannot_connect_local_all": "연결에 실패했습니다. 제공된 설정을 확인하세요.",
       "invalid_auth": "잘못된 인증 정보입니다.",
       "unknown": "예기치 않은 오류입니다.",
-      "verifyCode": "인증코드가 필요합니다. ",
-      "code_expired": "인증 코드가 만료되었습니다. ",
+      "code_needed": "인증 코드를 제공해야 합니다.",
+      "verifyCode": "인증코드가 필요합니다. 이메일이나 전화를 확인하세요.",
+      "code_expired": "인증 코드가 만료되었습니다. 새로운 코드가 요청되었습니다. 이메일이나 전화를 확인하세요.",
       "code_incorrect": "인증코드가 올바르지 않습니다. ",
       "tfaCode": "2FA 코드가 필요합니다. "
     },
     "step": {
       "init": {
         "title": "연결 설정 조정",
-        "description": "Bambu Cloud를 통해 구성하는 것이 가장 간단합니다. 그러나 2FA 또는 비밀번호가 없는 소셜 미디어 계정은 지원되지 않으며, Lan Only Mode로 설정된 프린터에는 사용할 수 없습니다.",
+        "description": "Bambu Lab 클라우드를 통한 구성은 가장 간단하고 빠릅니다. 비밀번호가 없는 소셜 미디어 계정은 지원되지 않습니다.\n\r다른 프린터에서 작동하는 인증 자격 증명을 재사용할 수도 있습니다. 발견되면 이메일 주소로 나열됩니다.\n\r또는 프린터 로컬 연결 세부 정보를 수동으로 제공하여 연결할 수 있습니다. 이는 LAN 모드의 프린터에 필요합니다.",
         "data": {
           "printer_mode": "프린터 구성 모드:"
         }
       },
       "Bambu": {
-        "title": "Bambu Cloud 연결",
+        "title": "Bambu Lab 클라우드 연결",
         "description": "Bambu Lab 자격 증명을 제공하세요:",
         "data": {
           "region": "계정 지역:",
           "email": "이메일 주소 또는 전화번호",
           "password": "비밀번호",
-          "verifyCode": "이메일 인증 코드",
+          "newCode": "새 코드 요청",
+          "verifyCode": "이메일 또는 전화 인증 코드",
           "tfaCode": "2단계 인증 코드"
         }
       },
       "Bambu_Lan": {
         "title": "프린터 구성 조정",
-        "description": "로컬 프린터 IP 주소와 접근 코드를 제공할 수 있습니다. 이는 P1/A1의 카메라 접근에 필요하거나, Bambu Cloud 대신 프린터에 직접 연결할 수 있도록 합니다.",
+        "description": "상태 업데이트를 위해 Bambu Lab 클라우드 대신 프린터에 직접 연결하도록 선택할 수 있습니다. 이렇게 하면 Bambu Lab 클라우드 중단에 대한 복원력이 제공되지만 Bambu Lab은 이 하이브리드 모드에 있을 때 프린터 제어를 제한하므로 일부 제어를 사용할 수 없습니다.",
         "data": {
-          "serial": "추가할 프린터 선택:",
+          "serial": "다음에 대한 설정을 조정합니다.",
           "host": "로컬 프린터 IP 주소:",
           "access_code": "접근 코드:",
-          "local_mqtt": "Bambu Cloud 대신 프린터에 직접 연결:",
+          "local_mqtt": "Bambu Lab 클라우드 대신 프린터에 직접 연결:",
           "usage_hours": "현재 사용 시간 (선택 사항):"
         }
       },
@@ -162,7 +168,10 @@
         "name": "출력 중지"
       },
       "refresh": {
-        "name": "데이터 강제 새로고침"
+        "name": "데이터 강제 새로 고침"
+      },
+      "dev": {
+        "name": "디버그"
       }
     },
     "fan": {
@@ -182,6 +191,9 @@
       },
       "cover_image": {
         "name": "커버 이미지"
+      },
+      "pick_image": {
+        "name": "이미지를 선택하십시오"
       }
     },
     "light": {
@@ -322,7 +334,7 @@
         "name": "MQTT 연결 모드",
         "state": {
           "local": "로컬",
-          "bambu_cloud": "Bambu Cloud"
+          "bambu_cloud": "밤부랩 클라우드"
         }
       },
       "gcode_file": {
@@ -451,7 +463,7 @@
             "name": "남은 필라멘트"
           },
           "tag_uid": {
-            "name": "스풀 시리얼 번호"
+            "name": "필라멘트 시리얼 번호"
           },
           "type": {
             "name": "유형"
@@ -562,6 +574,15 @@
             "name": "유형"
           }
         }
+      },
+      "ip_address": {
+        "name": "IP 주소"
+      },
+      "printable_objects": {
+        "name": "인쇄 가능한 물체"
+      },
+      "skipped_objects": {
+        "name": "건너 뛰는 물체"
       }
     },
     "camera": {
@@ -578,6 +599,23 @@
       },
       "imagecamera": {
         "name": "이미지 센서 카메라 사용"
+      },
+      "prompt_sound": {
+        "name": "프롬프트 소리 허용"
+      },
+      "ftp": {
+        "name": "프린터에서 모델 데이터를로드합니다"
+      },
+      "timelapse": {
+        "name": "프린터에서 최신 타임 랩스를로드하십시오"
+      }
+    }
+  },
+  "selector": {
+    "configuration_type": {
+      "options": {
+        "bambu": "밤부랩 클라우드",
+        "lan": "랜 모드"
       }
     }
   }
